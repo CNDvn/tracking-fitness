@@ -15,10 +15,15 @@ export default function ExerciseDetail() {
 
     useEffect(() => {
         if (id && user) {
+            const token = localStorage.getItem('token');
             fetch(`/api/workouts/${id}`)
                 .then(res => res.json())
                 .then(data => setWorkout(data));
-            fetch(`/api/trackings?workoutId=${id}&userId=${user.id}`)
+            fetch(`/api/trackings?workoutId=${id}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
                 .then(res => res.json())
                 .then(data => setTrackings(data));
         }
@@ -76,16 +81,24 @@ export default function ExerciseDetail() {
         ];
 
         try {
+            const token = localStorage.getItem('token');
             const res = await fetch('/api/trackings', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify({ workoutId: id, date: new Date().toISOString(), exercises, isSingleSet: true, userId: user.id })
             });
 
             if (res.ok) {
                 setMessage(`✓ Set ${setIndex + 1} saved!`);
                 setTimeout(() => setMessage(''), 2000);
-                const updatedTrackings = await fetch(`/api/trackings?workoutId=${id}&userId=${user.id}`).then(r => r.json());
+                const updatedTrackings = await fetch(`/api/trackings?workoutId=${id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                }).then(r => r.json());
                 setTrackings(updatedTrackings);
             }
         } catch (error) {
@@ -95,9 +108,13 @@ export default function ExerciseDetail() {
 
     const saveHeavyDay = async () => {
         try {
+            const token = localStorage.getItem('token');
             const res = await fetch('/api/trackings/heavy', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify({ workoutId: id, exerciseName: exercise.name, userId: user.id })
             });
 
@@ -136,9 +153,13 @@ export default function ExerciseDetail() {
         }
 
         try {
+            const token = localStorage.getItem('token');
             const res = await fetch('/api/trackings/update', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify({
                     trackingId: trackingData[exercise.name].trackingId,
                     exerciseName: exercise.name,
@@ -151,7 +172,11 @@ export default function ExerciseDetail() {
             if (res.ok) {
                 setMessage(`✓ Set ${setIndex + 1} updated!`);
                 setTimeout(() => setMessage(''), 2000);
-                const updatedTrackings = await fetch(`/api/trackings?workoutId=${id}&userId=${user.id}`).then(r => r.json());
+                const updatedTrackings = await fetch(`/api/trackings?workoutId=${id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                }).then(r => r.json());
                 setTrackings(updatedTrackings);
                 setEditingLastSession(false);
                 setTrackingData({});

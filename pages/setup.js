@@ -34,9 +34,13 @@ export default function Setup() {
 
     const saveWorkout = async () => {
         if (name && exercises.length > 0 && user) {
+            const token = localStorage.getItem('token');
             const res = await fetch('/api/workouts', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify({ name, exercises, userId: user.id })
             });
             if (res.ok) {

@@ -10,6 +10,9 @@ export default function App({ Component, pageProps }) {
     const router = useRouter()
 
     useEffect(() => {
+        // Chỉ chạy khi router sẵn sàng
+        if (!router.isReady) return
+
         // Load user from localStorage on mount
         const savedUser = localStorage.getItem('user')
         if (savedUser) {
@@ -20,14 +23,14 @@ export default function App({ Component, pageProps }) {
             }
         }
         setLoading(false)
-    }, [])
+    }, [router.isReady])
 
     // Redirect to login if not authenticated (except for login page)
     useEffect(() => {
-        if (!loading && !user && router.pathname !== '/login') {
+        if (!loading && !user && router.pathname !== '/login' && router.isReady) {
             router.push('/login')
         }
-    }, [user, loading, router])
+    }, [user, loading, router.pathname, router.isReady])
 
     if (loading) {
         return (

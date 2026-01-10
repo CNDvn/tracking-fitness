@@ -10,15 +10,37 @@ export default function Home() {
     const router = useRouter();
 
     useEffect(() => {
-        if (user) {
-            fetch(`/api/workouts?userId=${user.id}`)
+        if (user && router.isReady) {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                console.warn('No token found in localStorage');
+                setLoading(false);
+                return;
+            }
+
+            fetch(`/api/workouts`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
                 .then(res => res.json())
                 .then(data => {
-                    setWorkouts(data);
+                    // Handle both array responses and error objects
+                    if (Array.isArray(data)) {
+                        setWorkouts(data);
+                    } else {
+                        console.error('API returned non-array response:', data);
+                        setWorkouts([]);
+                    }
+                    setLoading(false);
+                })
+                .catch(error => {
+                    console.error('Error fetching workouts:', error);
+                    setWorkouts([]);
                     setLoading(false);
                 });
         }
-    }, [user]);
+    }, [user, router.isReady]);
 
     const handleLogout = () => {
         localStorage.removeItem('user');

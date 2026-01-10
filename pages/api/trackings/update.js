@@ -1,11 +1,23 @@
 import fs from 'fs';
 import path from 'path';
+import { verifyToken, verifyResourceOwnership } from '../../../lib/auth';
 
 const filePath = path.join(process.cwd(), 'data', 'trackings.json');
 
 export default function handler(req, res) {
+    // Verify token
+    const tokenVerification = verifyToken(req);
+    if (!tokenVerification.valid) {
+        return res.status(401).json({ error: tokenVerification.error });
+    }
+
     if (req.method === 'POST') {
         const { trackingId, exerciseName, setIndex, setData, userId } = req.body;
+
+        // SECURITY: Verify user can only update their own trackings
+        if (!verifyResourceOwnership(tokenVerification.userId, userId)) {
+            return res.status(403).json({ error: 'Forbidden' });
+        }
 
         if (!userId) {
             return res.status(400).json({ error: 'userId is required' });
@@ -16,7 +28,7 @@ export default function handler(req, res) {
             trackings = JSON.parse(fs.readFileSync(filePath, 'utf8'));
         } catch { }
 
-        // Find and update the tracking
+        // Find and update the tracking - verify ownership
         const tracking = trackings.find(t => t.id === trackingId && t.userId === userId);
         if (tracking) {
             const exercise = tracking.exercises.find(e => e.name === exerciseName);

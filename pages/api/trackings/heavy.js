@@ -1,11 +1,23 @@
 import fs from 'fs';
 import path from 'path';
+import { verifyToken, verifyResourceOwnership } from '../../../lib/auth';
 
 const filePath = path.join(process.cwd(), 'data', 'trackings.json');
 
 export default function handler(req, res) {
+    // Verify token
+    const tokenVerification = verifyToken(req);
+    if (!tokenVerification.valid) {
+        return res.status(401).json({ error: tokenVerification.error });
+    }
+
     if (req.method === 'POST') {
         const { workoutId, exerciseName, userId } = req.body;
+
+        // SECURITY: Verify user can only mark their own trackings as heavy
+        if (!verifyResourceOwnership(tokenVerification.userId, userId)) {
+            return res.status(403).json({ error: 'Forbidden' });
+        }
 
         if (!userId) {
             return res.status(400).json({ error: 'userId is required' });

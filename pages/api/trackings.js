@@ -5,19 +5,27 @@ const filePath = path.join(process.cwd(), 'data', 'trackings.json');
 
 export default function handler(req, res) {
     if (req.method === 'GET') {
-        const { workoutId } = req.query;
+        const { workoutId, userId } = req.query;
         try {
             const data = fs.readFileSync(filePath, 'utf8');
             let trackings = JSON.parse(data);
             if (workoutId) {
                 trackings = trackings.filter(t => t.workoutId === workoutId);
             }
+            if (userId) {
+                trackings = trackings.filter(t => t.userId === userId);
+            }
             res.status(200).json(trackings);
         } catch {
             res.status(200).json([]);
         }
     } else if (req.method === 'POST') {
-        const { workoutId, date, exercises, isSingleSet } = req.body;
+        const { workoutId, date, exercises, isSingleSet, userId } = req.body;
+
+        if (!userId) {
+            return res.status(400).json({ error: 'userId is required' });
+        }
+
         let trackings = [];
         try {
             trackings = JSON.parse(fs.readFileSync(filePath, 'utf8'));
@@ -28,7 +36,7 @@ export default function handler(req, res) {
             const today = new Date().toISOString().split('T')[0];
             const todayTracking = trackings.find(t => {
                 const tDate = new Date(t.date).toISOString().split('T')[0];
-                return tDate === today && t.workoutId === workoutId;
+                return tDate === today && t.workoutId === workoutId && t.userId === userId;
             });
 
             if (todayTracking) {
@@ -44,12 +52,12 @@ export default function handler(req, res) {
                 });
             } else {
                 // Create new today's tracking
-                const newTracking = { id: Date.now().toString(), workoutId, date: new Date().toISOString(), exercises };
+                const newTracking = { id: Date.now().toString(), userId, workoutId, date: new Date().toISOString(), exercises };
                 trackings.push(newTracking);
             }
         } else {
             // Save entire session
-            const newTracking = { id: Date.now().toString(), workoutId, date, exercises };
+            const newTracking = { id: Date.now().toString(), userId, workoutId, date, exercises };
             trackings.push(newTracking);
         }
 

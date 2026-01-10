@@ -5,14 +5,19 @@ const filePath = path.join(process.cwd(), 'data', 'trackings.json');
 
 export default function handler(req, res) {
     if (req.method === 'POST') {
-        const { trackingId, exerciseName, setIndex, setData } = req.body;
+        const { trackingId, exerciseName, setIndex, setData, userId } = req.body;
+
+        if (!userId) {
+            return res.status(400).json({ error: 'userId is required' });
+        }
+
         let trackings = [];
         try {
             trackings = JSON.parse(fs.readFileSync(filePath, 'utf8'));
         } catch { }
 
         // Find and update the tracking
-        const tracking = trackings.find(t => t.id === trackingId);
+        const tracking = trackings.find(t => t.id === trackingId && t.userId === userId);
         if (tracking) {
             const exercise = tracking.exercises.find(e => e.name === exerciseName);
             if (exercise && exercise.sets) {

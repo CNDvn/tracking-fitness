@@ -5,7 +5,12 @@ const filePath = path.join(process.cwd(), 'data', 'trackings.json');
 
 export default function handler(req, res) {
     if (req.method === 'POST') {
-        const { workoutId, exerciseName } = req.body;
+        const { workoutId, exerciseName, userId } = req.body;
+
+        if (!userId) {
+            return res.status(400).json({ error: 'userId is required' });
+        }
+
         let trackings = [];
         try {
             trackings = JSON.parse(fs.readFileSync(filePath, 'utf8'));
@@ -15,7 +20,7 @@ export default function handler(req, res) {
         const today = new Date().toISOString().split('T')[0];
         const todayTracking = trackings.find(t => {
             const tDate = new Date(t.date).toISOString().split('T')[0];
-            return tDate === today && t.workoutId === workoutId;
+            return tDate === today && t.workoutId === workoutId && t.userId === userId;
         });
 
         if (todayTracking) {

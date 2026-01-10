@@ -17,15 +17,44 @@ export default function handler(req, res) {
             res.status(200).json([]);
         }
     } else if (req.method === 'POST') {
-        const { workoutId, date, exercises } = req.body;
+        const { workoutId, date, exercises, isSingleSet } = req.body;
         let trackings = [];
         try {
             trackings = JSON.parse(fs.readFileSync(filePath, 'utf8'));
         } catch { }
-        const newTracking = { id: Date.now().toString(), workoutId, date, exercises };
-        trackings.push(newTracking);
+
+        // If it's a single set save, merge with today's tracking or create new
+        if (isSingleSet) {
+            const today = new Date().toISOString().split('T')[0];
+            const todayTracking = trackings.find(t => {
+                const tDate = new Date(t.date).toISOString().split('T')[0];
+                return tDate === today && t.workoutId === workoutId;
+            });
+
+            if (todayTracking) {
+                // Update existing today's tracking
+                exercises.forEach(newEx => {
+                    const existingEx = todayTracking.exercises.find(e => e.name === newEx.name);
+                    if (existingEx) {
+                        if (!existingEx.sets) existingEx.sets = [];
+                        existingEx.sets.push(newEx.sets[0]);
+                    } else {
+                        todayTracking.exercises.push(newEx);
+                    }
+                });
+            } else {
+                // Create new today's tracking
+                const newTracking = { id: Date.now().toString(), workoutId, date: new Date().toISOString(), exercises };
+                trackings.push(newTracking);
+            }
+        } else {
+            // Save entire session
+            const newTracking = { id: Date.now().toString(), workoutId, date, exercises };
+            trackings.push(newTracking);
+        }
+
         fs.writeFileSync(filePath, JSON.stringify(trackings, null, 2));
-        res.status(201).json(newTracking);
+        res.status(201).json({ success: true });
     } else {
         res.setHeader('Allow', ['GET', 'POST']);
         res.status(405).end(`Method ${req.method} Not Allowed`);

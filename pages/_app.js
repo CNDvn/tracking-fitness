@@ -10,10 +10,9 @@ export default function App({ Component, pageProps }) {
     const router = useRouter()
 
     useEffect(() => {
-        // Chỉ chạy khi router sẵn sàng
+        // Wait until router is ready to avoid race conditions
         if (!router.isReady) return
 
-        // Load user from localStorage on mount
         const savedUser = localStorage.getItem('user')
         if (savedUser) {
             try {
@@ -38,28 +37,17 @@ export default function App({ Component, pageProps }) {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                height: '100vh',
-                background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
-                color: 'white'
+                height: '100vh'
             }}>
                 <p style={{ fontSize: '18px', fontWeight: 600 }}>Loading...</p>
             </div>
         )
     }
 
-    // Show login page without context if not authenticated
-    if (!user && router.pathname === '/login') {
-        return <Component {...pageProps} />
-    }
-
-    // Show component with user context if authenticated
-    if (user) {
-        return (
-            <UserContext.Provider value={{ user, setUser }}>
-                <Component {...pageProps} />
-            </UserContext.Provider>
-        )
-    }
-
-    return null
+    // Always provide the UserContext so pages (including /login) can update it
+    return (
+        <UserContext.Provider value={{ user, setUser }}>
+            <Component {...pageProps} />
+        </UserContext.Provider>
+    )
 }

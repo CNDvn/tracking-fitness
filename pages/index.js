@@ -8,6 +8,35 @@ export default function Home() {
     const [loading, setLoading] = useState(true);
     const { user, setUser } = useContext(UserContext);
     const router = useRouter();
+    const [theme, setTheme] = useState('system');
+
+    useEffect(() => {
+        // Load theme preference and apply
+        const saved = localStorage.getItem('theme');
+        const prefer = saved || 'system';
+        setTheme(prefer);
+        applyTheme(prefer);
+    }, []);
+
+    const applyTheme = (t) => {
+        const root = document.documentElement;
+        if (t === 'dark') {
+            root.classList.add('dark');
+        } else if (t === 'light') {
+            root.classList.remove('dark');
+        } else {
+            // system
+            root.classList.remove('dark');
+            // let OS handle via prefers-color-scheme media query
+        }
+    };
+
+    const toggleTheme = () => {
+        const next = theme === 'dark' ? 'light' : 'dark';
+        setTheme(next);
+        localStorage.setItem('theme', next);
+        applyTheme(next);
+    };
 
     useEffect(() => {
         if (user && router.isReady) {
@@ -51,127 +80,100 @@ export default function Home() {
 
     return (
         <div className="container">
-            {/* Header with User Info */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' }}>
-                <div>
-                    <h1 style={{ margin: '0 0 8px 0' }}>Fitness Tracker</h1>
-                    <p style={{ color: '#64748b', margin: 0, fontSize: '14px', fontWeight: 500 }}>
-                        Welcome, {user?.name}! 👋
-                    </p>
+            {/* Header Section */}
+            <div style={{ marginBottom: '32px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
+                    <div>
+                        <h1 style={{ margin: 0, fontSize: '34px', fontWeight: 800 }}>💪 Fitness</h1>
+                        <p style={{ color: 'var(--text-secondary)', margin: '8px 0 0 0', fontSize: '16px', fontWeight: 500 }}>
+                            Welcome, <span style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{user?.name}</span>
+                        </p>
+                    </div>
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                        <button
+                            onClick={toggleTheme}
+                            aria-label="Toggle theme"
+                            style={{
+                                background: 'transparent',
+                                border: '1px solid var(--border-color)',
+                                padding: '8px 10px',
+                                fontSize: '14px',
+                                borderRadius: '10px',
+                                color: 'var(--text-primary)'
+                            }}
+                        >
+                            {theme === 'dark' ? '🌙' : '☀️'}
+                        </button>
+                        <button
+                            onClick={handleLogout}
+                            style={{
+                                background: 'var(--danger-color)',
+                                padding: '8px 14px',
+                                fontSize: '13px',
+                                borderRadius: '10px',
+                                boxShadow: '0 2px 8px rgba(255, 59, 48, 0.3)',
+                                minWidth: 'auto'
+                            }}
+                        >
+                            🚪
+                        </button>
+                    </div>
                 </div>
-                <button
-                    onClick={handleLogout}
-                    style={{
-                        backgroundColor: '#fee2e2',
-                        color: '#dc2626',
-                        border: '2px solid #fecaca',
-                        padding: '8px 14px',
-                        borderRadius: '8px',
-                        cursor: 'pointer',
-                        fontSize: '13px',
-                        fontWeight: 700,
-                        transition: 'all 0.3s ease'
-                    }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = '#fecaca';
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = '#fee2e2';
-                    }}
-                >
-                    🚪 Logout
-                </button>
             </div>
 
-            {/* Create New Workout Button */}
+            {/* Create Workout Button */}
             <Link href="/setup">
                 <button style={{
                     width: '100%',
-                    padding: '14px',
+                    padding: '16px',
                     fontSize: '16px',
                     fontWeight: 700,
-                    background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                    marginBottom: '28px',
-                    boxShadow: '0 4px 16px rgba(16, 185, 129, 0.4)'
+                    background: 'var(--primary-color)',
+                    marginBottom: '32px',
+                    boxShadow: '0 6px 16px rgba(0, 122, 255, 0.3)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px'
                 }}>
                     ＋ Setup New Workout
                 </button>
             </Link>
 
-            {/* Workouts Section */}
+            {/* Section Header */}
             <div style={{ marginBottom: '16px' }}>
-                <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#1e293b', margin: '0 0 16px 0' }}>
-                    Your Workouts ({workouts.length})
+                <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 4px 0' }}>
+                    Your Workouts
                 </h2>
+                <p style={{ fontSize: '13px', color: 'var(--text-secondary)', margin: 0 }}>
+                    {workouts.length} workout{workouts.length !== 1 ? 's' : ''}
+                </p>
             </div>
 
             {/* Workouts List */}
             {loading ? (
-                <div style={{ textAlign: 'center', padding: '40px 20px', color: '#64748b' }}>
-                    <p style={{ fontSize: '14px' }}>Loading...</p>
+                <div className="loading">
+                    <p>Loading your workouts...</p>
                 </div>
             ) : workouts.length === 0 ? (
-                <div style={{
-                    textAlign: 'center',
-                    padding: '40px 20px',
-                    backgroundColor: '#f0fdf4',
-                    borderRadius: '12px',
-                    border: '2px dashed #bbf7d0'
-                }}>
-                    <p style={{ color: '#047857', fontSize: '14px', fontWeight: 500, margin: 0 }}>
-                        No workouts yet. Create one to get started! 💪
-                    </p>
+                <div className="empty-state" style={{ marginBottom: '32px' }}>
+                    <div className="empty-state-icon">💪</div>
+                    <p className="empty-state-title">No workouts yet</p>
+                    <p className="empty-state-description">Create your first workout to get started</p>
                 </div>
             ) : (
-                <ul style={{ gap: '14px' }}>
+                <ul style={{ gap: '12px', marginBottom: '32px' }}>
                     {workouts.map(workout => (
                         <li key={workout.id}>
                             <Link href={`/workout/${workout.id}`} style={{ textDecoration: 'none' }}>
-                                <div style={{
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    alignItems: 'center',
-                                    padding: '16px 18px',
-                                    background: 'linear-gradient(135deg, #f8fafc 0%, #ffffff 100%)',
-                                    border: '2px solid #e2e8f0',
-                                    borderRadius: '12px',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.3s ease',
-                                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)'
-                                }}
-                                    onMouseEnter={(e) => {
-                                        e.currentTarget.style.borderColor = '#3b82f6';
-                                        e.currentTarget.style.boxShadow = '0 6px 16px rgba(59, 130, 246, 0.2)';
-                                        e.currentTarget.style.transform = 'translateY(-2px)';
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.style.borderColor = '#e2e8f0';
-                                        e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.05)';
-                                        e.currentTarget.style.transform = 'translateY(0)';
-                                    }}
-                                >
+                                <div className="workout-card">
                                     <div>
-                                        <p style={{
-                                            margin: 0,
-                                            fontSize: '16px',
-                                            fontWeight: 700,
-                                            color: '#1e293b',
-                                            marginBottom: '6px'
-                                        }}>
-                                            {workout.name}
-                                        </p>
-                                        <p style={{
-                                            margin: 0,
-                                            fontSize: '13px',
-                                            color: '#64748b',
-                                            fontWeight: 500
-                                        }}>
-                                            {workout.exercises?.length || 0} exercises
-                                        </p>
+                                        <p className="workout-card-title">{workout.name}</p>
+                                        <p className="workout-card-subtitle">{workout.exercises?.length || 0} exercises</p>
                                     </div>
                                     <div style={{
                                         fontSize: '20px',
-                                        color: '#3b82f6',
+                                        color: 'var(--primary-color)',
                                         fontWeight: 700
                                     }}>
                                         →

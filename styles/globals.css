@@ -10,69 +10,43 @@
 :root {
     /* Core background / text */
     --bg-primary: #ffffff;
-    --bg-secondary: #f7fbff;
-    --bg-tertiary: #f0f7ff;
-    --text-primary: #071124;
-    --text-secondary: #5b6b79;
-    --text-tertiary: #9aa6b3;
+    --bg-secondary: #f9fafb;
+    --bg-tertiary: #f3f4f6;
+    --text-primary: #1f2937;
+    --text-secondary: #6b7280;
+    --text-tertiary: #9ca3af;
 
     /* Borders & shadows */
-    --border-color: rgba(7, 17, 36, 0.06);
-    --card-shadow: 0 10px 30px rgba(11, 22, 48, 0.06);
-    --card-shadow-hover: 0 18px 44px rgba(11, 22, 48, 0.10);
+    --border-color: #e5e7eb;
+    --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.06);
+    --card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.1);
 
-    /* Gen Z vibrant accents */
-    --accent-electric-blue: #00c2ff;
-    --accent-neon-purple: #8b5cf6;
-    --accent-lime: #a3e635;
-    --accent-soft-orange: #fb923c;
-    --gradient-main: linear-gradient(135deg, #00c2ff 0%, #8b5cf6 45%, #a3e635 100%);
-    --dark-gradient: linear-gradient(135deg, #6b21a8 0%, #2dd4bf 60%);
+    /* Accent colors - professional palette */
+    --accent-primary: #7c3aed;
+    --accent-success: #10b981;
+    --accent-warning: #f59e0b;
+    --accent-danger: #ef4444;
 
-    --primary-color: var(--accent-neon-purple);
-    --primary-light: #b794f4;
-    --primary-dark: #5b21a8;
-    --success-color: var(--accent-lime);
-    --warning-color: var(--accent-soft-orange);
-    --danger-color: #ef4444;
-
-    /* Glass / blur */
-    --glass-bg: rgba(255, 255, 255, 0.65);
-    --glass-border: rgba(255, 255, 255, 0.6);
-    --glass-blur: 12px;
+    --primary-color: var(--accent-primary);
+    --primary-light: #a78bfa;
+    --primary-dark: #5b21b6;
+    --success-color: var(--accent-success);
+    --warning-color: var(--accent-warning);
+    --danger-color: var(--accent-danger);
 }
-
-/* Disabled: Prevent dark mode from system preference */
-/* @media (prefers-color-scheme: dark) {
-    :root {
-        --bg-primary: #05060b;
-        --bg-secondary: #071124;
-        --bg-tertiary: #0b1220;
-        --text-primary: #e6f0ff;
-        --text-secondary: #9fb0c2;
-        --text-tertiary: #8b96a4;
-        --border-color: rgba(255, 255, 255, 0.04);
-        --card-shadow: 0 18px 44px rgba(2, 6, 23, 0.6);
-        --card-shadow-hover: 0 28px 64px rgba(2, 6, 23, 0.8);
-        --glass-bg: rgba(255, 255, 255, 0.03);
-        --glass-border: rgba(255, 255, 255, 0.06);
-    }
-} */
 
 /* Manual dark mode using `.dark` class on <html> or <body> */
 html.dark,
 body.dark {
-    --bg-primary: #121212;
-    --bg-secondary: #1e1e1e;
-    --bg-tertiary: #2a2a2a;
-    --text-primary: #e8e8e8;
-    --text-secondary: #b0b0b0;
-    --text-tertiary: #888888;
-    --border-color: #333333;
-    --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    --card-shadow-hover: 0 8px 20px rgba(0, 0, 0, 0.3);
-    --glass-bg: rgba(30, 30, 30, 0.8);
-    --glass-border: rgba(255, 255, 255, 0.1);
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --bg-tertiary: #334155;
+    --text-primary: #f1f5f9;
+    --text-secondary: #cbd5e1;
+    --text-tertiary: #94a3b8;
+    --border-color: #334155;
+    --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 html {
@@ -96,68 +70,76 @@ body {
     padding: 16px;
     background-color: var(--bg-primary);
     min-height: 100vh;
-    box-shadow: 0 0 0 1px var(--border-color);
     transition: background-color 0.3s ease;
 }
 
-/* Button Styles - iOS Design */
+/* Button Styles - Modern & Simple */
 button {
     background: var(--primary-color);
     color: white;
     border: none;
     padding: 12px 20px;
-    border-radius: 12px;
+    border-radius: 10px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 600;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+    transition: all 0.2s ease;
+    box-shadow: none;
     position: relative;
     overflow: hidden;
 }
 
-button::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.2);
-    transition: left 0.5s;
-}
-
 button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(0, 122, 255, 0.4);
-}
-
-button:hover::before {
-    left: 100%;
+    opacity: 0.9;
+    transform: translateY(-1px);
 }
 
 button:active {
     transform: translateY(0);
-    opacity: 0.9;
+    opacity: 0.85;
 }
 
 button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+    transform: none;
 }
 
-/* Input Styles - iOS Design */
+/* Secondary button variant */
+button.btn-secondary {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+button.btn-secondary:hover {
+    background: var(--bg-tertiary);
+    opacity: 0.85;
+}
+
+/* Outline button variant */
+button.btn-outline {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+button.btn-outline:hover {
+    background: var(--bg-tertiary);
+}
+
+/* Input Styles - Clean & Minimal */
 input,
 textarea {
     width: 100%;
-    padding: 12px 16px;
+    padding: 12px 14px;
     margin: 8px 0;
-    border: none;
-    border-radius: 12px;
-    font-size: 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    font-size: 14px;
     background-color: var(--bg-secondary);
     color: var(--text-primary);
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     font-family: inherit;
 }
 
@@ -169,8 +151,9 @@ textarea::placeholder {
 input:focus,
 textarea:focus {
     outline: none;
-    background-color: var(--bg-tertiary);
-    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+    border-color: var(--primary-color);
+    background-color: var(--bg-primary);
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
 }
 
 input:disabled {
@@ -178,24 +161,26 @@ input:disabled {
     cursor: not-allowed;
 }
 
-/* Typography */
+/* Typography - Clear Hierarchy */
 h1 {
-    font-size: 34px;
-    font-weight: 800;
+    font-size: 28px;
+    font-weight: 600;
     margin: 24px 0 8px 0;
     color: var(--text-primary);
+    letter-spacing: -0.5px;
 }
 
 h2 {
-    font-size: 22px;
-    font-weight: 700;
-    margin: 16px 0 12px 0;
+    font-size: 20px;
+    font-weight: 600;
+    margin: 20px 0 12px 0;
     color: var(--text-primary);
+    letter-spacing: -0.3px;
 }
 
 h3 {
-    font-size: 18px;
-    font-weight: 700;
+    font-size: 16px;
+    font-weight: 600;
     color: var(--text-primary);
     margin: 12px 0 8px 0;
 }
@@ -204,32 +189,40 @@ p {
     margin: 0;
     color: var(--text-secondary);
     line-height: 1.5;
+    font-size: 14px;
 }
 
-/* List Styles */
+/* Meta text (smaller, lower contrast) */
+.meta {
+    font-size: 13px;
+    color: var(--text-tertiary);
+    font-weight: 500;
+}
+
+/* List Styles - Improved scanability */
 ul {
     list-style: none;
     padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 14px;
 }
 
 li {
     padding: 0;
     border-bottom: none;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
 }
 
-/* Card/List Item */
+/* Card/List Item - Minimal, Clear Boundaries */
 .card,
 .list-item {
     background: var(--bg-secondary);
-    border-radius: 16px;
+    border-radius: 12px;
     padding: 16px;
-    border: none;
+    border: 1px solid var(--border-color);
     box-shadow: var(--card-shadow);
-    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: all 0.2s ease;
 }
 
 .card:active,
@@ -238,62 +231,65 @@ li {
     box-shadow: var(--card-shadow-hover);
 }
 
-/* Specific Components */
+/* Workout Card - Clean Design */
 .workout-card {
     background: var(--bg-secondary);
-    border-radius: 16px;
-    padding: 16px 18px;
+    border-radius: 12px;
+    padding: 14px 16px;
     text-decoration: none;
     color: var(--text-primary);
-    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: all 0.2s ease;
+    border: 1px solid var(--border-color);
     box-shadow: var(--card-shadow);
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-@media (prefers-color-scheme: dark) {
-
-    body.dark .workout-card,
-    html.dark .workout-card {
-        background: #171717;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    }
+.workout-card:hover {
+    box-shadow: var(--card-shadow-hover);
+    border-color: var(--primary-color);
 }
 
 .workout-card:active {
     transform: scale(0.98);
-    box-shadow: var(--card-shadow-hover);
 }
 
 .workout-card-title {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 600;
     color: var(--text-primary);
     margin: 0 0 4px 0;
 }
 
 .workout-card-subtitle {
-    font-size: 14px;
-    color: var(--text-secondary);
+    font-size: 13px;
+    color: var(--text-tertiary);
     margin: 0;
+    font-weight: 500;
 }
 
+/* Exercise Card */
 .exercise-card {
     background: var(--bg-secondary);
-    border-radius: 16px;
+    border-radius: 12px;
     padding: 16px;
     margin-bottom: 12px;
     box-shadow: var(--card-shadow);
-    border: none;
+    border: 1px solid var(--border-color);
+    transition: all 0.2s ease;
 }
 
 .exercise-card:last-child {
     margin-bottom: 0;
 }
 
+.exercise-card:hover {
+    box-shadow: var(--card-shadow-hover);
+}
+
 .exercise-title {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 600;
     color: var(--text-primary);
     margin: 0 0 12px 0;
@@ -303,7 +299,7 @@ li {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 12px;
-    font-size: 14px;
+    font-size: 13px;
     color: var(--text-secondary);
 }
 
@@ -312,16 +308,18 @@ li {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 12px;
-    border-radius: 12px;
+    padding: 12px 14px;
+    border-radius: 10px;
     background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     user-select: none;
 }
 
-.checkbox-label:active {
+.checkbox-label:hover {
     background: var(--bg-tertiary);
+    border-color: var(--primary-color);
 }
 
 .checkbox-label input[type="checkbox"] {
@@ -332,7 +330,7 @@ li {
 }
 
 .checkbox-label span {
-    font-size: 16px;
+    font-size: 14px;
     color: var(--text-primary);
     font-weight: 500;
 }
@@ -342,21 +340,22 @@ li {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 24px 0 16px 0;
+    margin: 28px 0 16px 0;
 }
 
 .section-title {
-    font-size: 18px;
-    font-weight: 700;
+    font-size: 16px;
+    font-weight: 600;
     color: var(--text-primary);
     margin: 0;
+    letter-spacing: -0.2px;
 }
 
 /* Badge/Badge Style */
 .badge {
     display: inline-block;
     padding: 4px 12px;
-    border-radius: 20px;
+    border-radius: 8px;
     background: var(--primary-color);
     color: white;
     font-size: 12px;
@@ -371,30 +370,36 @@ li {
 /* Message Styles */
 .success-message {
     color: var(--success-color);
-    padding: 12px 16px;
-    background: rgba(52, 199, 89, 0.1);
-    border-radius: 12px;
-    font-size: 14px;
+    padding: 12px 14px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-left: 3px solid var(--success-color);
+    border-radius: 10px;
+    font-size: 13px;
     font-weight: 500;
     margin: 12px 0;
 }
 
 .error-message {
     color: var(--danger-color);
-    padding: 12px 16px;
-    background: rgba(255, 59, 48, 0.1);
-    border-radius: 12px;
-    font-size: 14px;
+    padding: 12px 14px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-left: 3px solid var(--danger-color);
+    border-radius: 10px;
+    font-size: 13px;
     font-weight: 500;
     margin: 12px 0;
 }
 
 .info-message {
     color: var(--primary-color);
-    padding: 12px 16px;
-    background: rgba(0, 122, 255, 0.1);
-    border-radius: 12px;
-    font-size: 14px;
+    padding: 12px 14px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-left: 3px solid var(--primary-color);
+    border-radius: 10px;
+    font-size: 13px;
     font-weight: 500;
     margin: 12px 0;
 }
@@ -428,40 +433,45 @@ li {
     color: var(--text-secondary);
 }
 
-/* ---------- Gen Z helpers & glass UI ---------- */
+.loading p {
+    font-size: 14px;
+    margin: 0;
+}
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap');
+/* ---------- Glass & Premium utilities ---------- */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 .glass-card {
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    backdrop-filter: blur(var(--glass-blur));
-    border-radius: 18px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
     box-shadow: var(--card-shadow);
     padding: 14px;
 }
 
-.neumo {
-    border-radius: 16px;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(250, 250, 255, 0.9));
-    box-shadow: 8px 8px 20px rgba(11, 22, 48, 0.06), -8px -8px 20px rgba(255, 255, 255, 0.6);
-    padding: 14px;
-}
-
+/* CTA Button - Gradient only for primary actions */
 .btn-cta {
-    background: var(--gradient-main);
+    background: linear-gradient(135deg, var(--accent-primary) 0%, #5b21b6 100%);
     color: white;
     border: none;
     padding: 12px 16px;
-    border-radius: 14px;
-    font-weight: 800;
-    box-shadow: 0 12px 30px rgba(12, 92, 255, 0.12);
-    transition: transform 0.22s cubic-bezier(.2, .9, .3, 1), box-shadow 0.22s ease;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 14px;
+    box-shadow: 0 2px 8px rgba(124, 58, 237, 0.2);
+    transition: all 0.2s ease;
+    cursor: pointer;
 }
 
 .btn-cta:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 20px 44px rgba(12, 92, 255, 0.14);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+}
+
+.btn-cta:active {
+    transform: translateY(0);
+    opacity: 0.9;
 }
 
 .floating-cta {
@@ -472,7 +482,7 @@ li {
     width: calc(100% - 40px);
     max-width: 420px;
     z-index: 60;
-    border-radius: 999px;
+    border-radius: 12px;
     padding: 10px;
 }
 
@@ -482,10 +492,10 @@ li {
 
 .caps {
     text-transform: uppercase;
-    letter-spacing: 0.6px;
-    font-weight: 700;
-    font-size: 12px;
-    color: var(--text-secondary);
+    letter-spacing: 0.5px;
+    font-weight: 600;
+    font-size: 11px;
+    color: var(--text-tertiary);
 }
 
 @keyframes floatUp {
@@ -504,33 +514,27 @@ li {
 
 @keyframes pulse {
     0% {
-        box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.12);
+        box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.4);
     }
 
     70% {
-        box-shadow: 0 0 0 12px rgba(139, 92, 246, 0.00);
+        box-shadow: 0 0 0 10px rgba(124, 58, 237, 0);
     }
 
     100% {
-        box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.00);
+        box-shadow: 0 0 0 0 rgba(124, 58, 237, 0);
     }
 }
 
 .pulse {
-    animation: pulse 1.6s infinite;
-}
-
-/* Dark mode gradient utility */
-.dark-gradient-bg {
-    background: var(--dark-gradient);
-    color: white;
+    animation: pulse 2s infinite;
 }
 
 /* Small rounded avatar/emoji */
 .emoji-avatar {
     width: 48px;
     height: 48px;
-    border-radius: 12px;
+    border-radius: 10px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -543,44 +547,35 @@ li {
     align-items: center;
     gap: 10px;
     padding: 8px 12px;
-    border-radius: 12px;
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    backdrop-filter: blur(var(--glass-blur));
-    box-shadow: var(--card-shadow);
+    border-radius: 10px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
     cursor: pointer;
-    transition: transform 0.16s ease, box-shadow 0.16s ease;
+    transition: all 0.2s ease;
     font-family: inherit;
 }
 
 .back-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--card-shadow-hover);
+    background: var(--bg-tertiary);
+    border-color: var(--primary-color);
 }
 
 .back-btn .back-icon {
     width: 36px;
     height: 36px;
-    border-radius: 10px;
+    border-radius: 8px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(90deg, var(--accent-electric-blue), var(--accent-neon-purple));
+    background: var(--primary-color);
     color: white;
-    font-weight: 800;
+    font-weight: 600;
 }
 
 .back-btn .back-label {
-    font-weight: 800;
+    font-weight: 600;
     color: var(--text-primary);
     font-size: 14px;
-}
-
-/* End Gen Z helpers */
-
-.loading p {
-    font-size: 14px;
-    margin: 0;
 }
 
 /* Empty State */
@@ -588,7 +583,7 @@ li {
     text-align: center;
     padding: 40px 20px;
     background: var(--bg-secondary);
-    border-radius: 16px;
+    border-radius: 12px;
     border: 1px dashed var(--border-color);
 }
 

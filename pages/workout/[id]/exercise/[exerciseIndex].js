@@ -545,7 +545,7 @@ export default function ExerciseDetail() {
                 <h3 style={{ marginTop: 0, fontSize: '16px' }}>🏋️ Track Today</h3>
 
                 {!trackingData[exercise.name] ? (
-                    <button onClick={initializeTracking} className="btn-cta" style={{ width: '100%' }}>▶ Start Tracking</button>
+                    <button onClick={initializeTracking} style={{ width: '100%', padding: '12px 16px', borderRadius: '10px', backgroundColor: 'var(--primary-color)', color: 'white', border: 'none', fontSize: '14px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s ease' }} onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.9'; e.currentTarget.style.transform = 'translateY(-1px)'; }} onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'translateY(0)'; }}>▶ Start Tracking</button>
                 ) : (
                     <>
                         <div style={{ marginBottom: '12px' }}>
@@ -560,12 +560,12 @@ export default function ExerciseDetail() {
                                         <input type="number" placeholder="Weight (kg)" value={setData.weight} onChange={(e) => handleSetChange(setIdx, 'weight', e.target.value)} style={{ flex: 1, padding: '10px 12px', borderRadius: '10px', border: '1px solid var(--border-color)', fontSize: '14px' }} />
                                         <input type="number" placeholder="Reps" value={setData.reps} onChange={(e) => handleSetChange(setIdx, 'reps', e.target.value)} style={{ flex: 1, padding: '10px 12px', borderRadius: '10px', border: '1px solid var(--border-color)', fontSize: '14px' }} />
                                     </div>
-                                    <button onClick={() => saveSetTracking(setIdx, setData)} className="btn-cta" style={{ width: '100%', background: 'linear-gradient(90deg, var(--accent-neon-purple), var(--accent-electric-blue))', padding: '10px', borderRadius: '10px' }}>✓ Save Set {setIdx + 1}</button>
+                                    <button onClick={() => saveSetTracking(setIdx, setData)} style={{ width: '100%', padding: '10px 12px', borderRadius: '10px', backgroundColor: 'var(--primary-color)', color: 'white', border: 'none', fontSize: '14px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s ease' }} onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.9'; e.currentTarget.style.transform = 'translateY(-1px)'; }} onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'translateY(0)'; }}>✓ Save Set {setIdx + 1}</button>
                                 </div>
                             ))}
                         </div>
 
-                        <button onClick={saveHeavyDay} className="btn-cta" style={{ width: '100%', marginTop: '12px', background: isHeavyDay ? 'linear-gradient(90deg,#ef4444,#dc2626)' : 'linear-gradient(90deg,var(--accent-soft-orange),var(--accent-neon-purple))' }}>{isHeavyDay ? '💪 Heavy Day!' : '💪 Mark as Heavy Day'}</button>
+                        <button onClick={saveHeavyDay} style={{ width: '100%', marginTop: '12px', padding: '12px 16px', borderRadius: '10px', backgroundColor: isHeavyDay ? '#ef4444' : 'var(--warning-color)', color: 'white', border: 'none', fontSize: '14px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s ease' }} onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.9'; e.currentTarget.style.transform = 'translateY(-1px)'; }} onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'translateY(0)'; }}>{isHeavyDay ? '💪 Heavy Day!' : '💪 Mark as Heavy Day'}</button>
                     </>
                 )}
             </div>

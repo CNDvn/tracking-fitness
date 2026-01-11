@@ -11,6 +11,7 @@ export default function ExerciseDetail() {
     const [trackingData, setTrackingData] = useState({});
     const [message, setMessage] = useState('');
     const [isHeavyDay, setIsHeavyDay] = useState(false);
+    const [note, setNote] = useState('');
     const [editingLastSession, setEditingLastSession] = useState(false);
 
     useEffect(() => {
@@ -54,7 +55,22 @@ export default function ExerciseDetail() {
             setTrackingData({
                 [exercise.name]: { sets }
             });
+            // Pre-fill today's note with the most recent note for this exercise
+            if (last && last.exercises.find(e => e.name === exercise.name)?.note) {
+                setNote(last.exercises.find(e => e.name === exercise.name).note);
+            } else {
+                setNote('');
+            }
         }
+    };
+
+    // helper: find today's tracking for this workout (if any)
+    const getTodayTracking = () => {
+        const today = new Date().toISOString().split('T')[0];
+        return trackings.find(t => {
+            const tDate = new Date(t.date).toISOString().split('T')[0];
+            return tDate === today && t.workoutId === id;
+        });
     };
 
     const handleSetChange = (setIndex, field, value) => {
@@ -76,22 +92,54 @@ export default function ExerciseDetail() {
         const exercises = [
             {
                 name: exercise.name,
-                sets: [setData]
+                sets: [setData],
+                ...(note && { note })
             }
         ];
 
         try {
             const token = localStorage.getItem('token');
-            const res = await fetch('/api/trackings', {
+            const todayTracking = getTodayTracking();
+
+            // If today's tracking exists and that exercise's set index already exists, update instead of appending
+            if (todayTracking) {
+                const existingEx = todayTracking.exercises.find(e => e.name === exercise.name);
+                if (existingEx && existingEx.sets && existingEx.sets[setIndex]) {
+                    // Update existing set
+                    const res = await fetch('/api/trackings/update', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ trackingId: todayTracking.id, exerciseName: exercise.name, setIndex: setIndex, setData: setData, userId: user.id, note })
+                    });
+
+                    if (res.ok) {
+                        setMessage(`✓ Set ${setIndex + 1} updated!`);
+                        setTimeout(() => setMessage(''), 2000);
+                        const updatedTrackings = await fetch(`/api/trackings?workoutId=${id}`, {
+                            headers: {
+                                'Authorization': `Bearer ${token}`
+                            }
+                        }).then(r => r.json());
+                        setTrackings(updatedTrackings);
+                        return;
+                    }
+                }
+            }
+
+            // Otherwise append as a single-set save
+            const res2 = await fetch('/api/trackings', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify({ workoutId: id, date: new Date().toISOString(), exercises, isSingleSet: true, userId: user.id })
+                body: JSON.stringify({ workoutId: id, date: new Date().toISOString(), exercises, isSingleSet: true, userId: user.id, note })
             });
 
-            if (res.ok) {
+            if (res2.ok) {
                 setMessage(`✓ Set ${setIndex + 1} saved!`);
                 setTimeout(() => setMessage(''), 2000);
                 const updatedTrackings = await fetch(`/api/trackings?workoutId=${id}`, {
@@ -138,7 +186,7 @@ export default function ExerciseDetail() {
                     lastExerciseData.sets[idx] || { weight: '', reps: '' }
                 );
                 setTrackingData({
-                    [exercise.name]: { sets, trackingId: last.id, lastDate: last.date }
+                    [exercise.name]: { sets, trackingId: last.id, lastDate: last.date, editNote: lastExerciseData.note || '' }
                 });
                 setEditingLastSession(true);
             }
@@ -154,6 +202,7 @@ export default function ExerciseDetail() {
 
         try {
             const token = localStorage.getItem('token');
+            const editNote = trackingData[exercise.name]?.editNote;
             const res = await fetch('/api/trackings/update', {
                 method: 'POST',
                 headers: {
@@ -165,7 +214,8 @@ export default function ExerciseDetail() {
                     exerciseName: exercise.name,
                     setIndex: setIndex,
                     setData: setData,
-                    userId: user.id
+                    userId: user.id,
+                    note: editNote
                 })
             });
 
@@ -183,6 +233,55 @@ export default function ExerciseDetail() {
             }
         } catch (error) {
             setMessage('Error updating set');
+        }
+    };
+
+    // Save all sets from editing session at once
+    const saveAllEditedSets = async () => {
+        const allSets = trackingData[exercise.name]?.sets || [];
+        const editNote = trackingData[exercise.name]?.editNote || '';
+
+        // Filter out empty sets - only keep sets that have at least weight or reps filled
+        const validSets = allSets.filter(set => set.weight !== '' || set.reps !== '');
+
+        if (validSets.length === 0) {
+            setMessage('Please fill at least one set');
+            setTimeout(() => setMessage(''), 3000);
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem('token');
+            // Send only filled sets in one request
+            const res = await fetch('/api/trackings/update-all', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    trackingId: trackingData[exercise.name].trackingId,
+                    exerciseName: exercise.name,
+                    sets: validSets,
+                    userId: user.id,
+                    note: editNote
+                })
+            });
+
+            if (res.ok) {
+                setMessage('✓ Session saved!');
+                setTimeout(() => setMessage(''), 2000);
+                const updatedTrackings = await fetch(`/api/trackings?workoutId=${id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                }).then(r => r.json());
+                setTrackings(updatedTrackings);
+                setEditingLastSession(false);
+                setTrackingData({});
+            }
+        } catch (error) {
+            setMessage('Error saving session');
         }
     };
 
@@ -271,6 +370,11 @@ export default function ExerciseDetail() {
                             </p>
                         ))}
                     </div>
+                    {last.exercises.find(e => e.name === exercise.name)?.note && (
+                        <div style={{ backgroundColor: '#f8fafc', padding: '10px', borderRadius: '8px', marginBottom: '8px', color: '#065f46' }}>
+                            📝 <strong>Note:</strong> {last.exercises.find(e => e.name === exercise.name).note}
+                        </div>
+                    )}
                     <p style={{ margin: '8px 0 0 0', fontSize: '13px', color: '#64748b', fontWeight: 500 }}>
                         📅 {new Date(last.date).toLocaleDateString()}
                     </p>
@@ -314,11 +418,20 @@ export default function ExerciseDetail() {
                     marginBottom: '18px'
                 }}>
                     <h3 style={{ marginTop: 0, color: '#92400e', fontSize: '16px' }}>✏️ Edit Last Session</h3>
+                    <div style={{ marginBottom: '12px' }}>
+                        <label htmlFor="edit-note" style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: 700, color: '#334155' }}>📝 Session Note</label>
+                        <textarea id="edit-note" placeholder="Add a note for this exercise session" value={trackingData[exercise.name]?.editNote || ''} onChange={(e) => {
+                            const updated = { ...trackingData };
+                            if (!updated[exercise.name]) updated[exercise.name] = {};
+                            updated[exercise.name].editNote = e.target.value;
+                            setTrackingData(updated);
+                        }} style={{ width: '100%', minHeight: '60px', padding: '10px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '14px', resize: 'vertical', backgroundColor: '#ffffff' }} />
+                    </div>
                     <div style={{ backgroundColor: '#ffffff', padding: '12px', borderRadius: '8px', marginBottom: '12px', maxHeight: '350px', overflowY: 'auto' }}>
                         {trackingData[exercise.name]?.sets?.map((setData, setIdx) => (
                             <div key={setIdx} style={{ marginBottom: '14px', padding: '12px', backgroundColor: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                                 <p style={{ fontSize: '14px', fontWeight: 700, color: '#334155', margin: '0 0 10px 0' }}>Set {setIdx + 1}</p>
-                                <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+                                <div style={{ display: 'flex', gap: '10px' }}>
                                     <input
                                         type="number"
                                         placeholder="Weight (kg)"
@@ -342,60 +455,62 @@ export default function ExerciseDetail() {
                                         style={{ flex: 1, padding: '10px 12px', borderRadius: '8px', border: '2px solid #e2e8f0', fontSize: '14px' }}
                                     />
                                 </div>
-                                <button
-                                    onClick={() => updateLastSession(setIdx, setData)}
-                                    style={{
-                                        width: '100%',
-                                        backgroundColor: '#059669',
-                                        color: 'white',
-                                        border: 'none',
-                                        padding: '8px',
-                                        borderRadius: '6px',
-                                        cursor: 'pointer',
-                                        fontSize: '13px',
-                                        fontWeight: 700,
-                                        transition: 'all 0.3s ease'
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        e.currentTarget.style.transform = 'translateY(-1px)';
-                                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(5, 150, 105, 0.3)';
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.style.transform = 'translateY(0)';
-                                        e.currentTarget.style.boxShadow = 'none';
-                                    }}
-                                >
-                                    Save Set {setIdx + 1}
-                                </button>
                             </div>
                         ))}
                     </div>
-                    <button
-                        onClick={() => {
-                            setEditingLastSession(false);
-                            setTrackingData({});
-                        }}
-                        style={{
-                            width: '100%',
-                            backgroundColor: '#94a3b8',
-                            color: 'white',
-                            border: 'none',
-                            padding: '10px',
-                            borderRadius: '8px',
-                            cursor: 'pointer',
-                            fontSize: '14px',
-                            fontWeight: 700,
-                            transition: 'all 0.3s ease'
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.transform = 'translateY(-2px)';
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.transform = 'translateY(0)';
-                        }}
-                    >
-                        Cancel
-                    </button>
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                        <button
+                            onClick={saveAllEditedSets}
+                            style={{
+                                flex: 1,
+                                backgroundColor: '#059669',
+                                color: 'white',
+                                border: 'none',
+                                padding: '12px',
+                                borderRadius: '8px',
+                                cursor: 'pointer',
+                                fontSize: '14px',
+                                fontWeight: 700,
+                                transition: 'all 0.3s ease'
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = 'translateY(-2px)';
+                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(5, 150, 105, 0.3)';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = 'translateY(0)';
+                                e.currentTarget.style.boxShadow = 'none';
+                            }}
+                        >
+                            ✓ Save All
+                        </button>
+                        <button
+                            onClick={() => {
+                                setEditingLastSession(false);
+                                setTrackingData({});
+                            }}
+                            style={{
+                                flex: 1,
+                                backgroundColor: '#94a3b8',
+                                color: 'white',
+                                border: 'none',
+                                padding: '12px',
+                                borderRadius: '8px',
+                                cursor: 'pointer',
+                                fontSize: '14px',
+                                fontWeight: 700,
+                                transition: 'all 0.3s ease'
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = 'translateY(-2px)';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = 'translateY(0)';
+                            }}
+                        >
+                            Cancel
+                        </button>
+                    </div>
                 </div>
             )}
 
@@ -433,6 +548,10 @@ export default function ExerciseDetail() {
                     <button onClick={initializeTracking} className="btn-cta" style={{ width: '100%' }}>▶ Start Tracking</button>
                 ) : (
                     <>
+                        <div style={{ marginBottom: '12px' }}>
+                            <label htmlFor="session-note" style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: 700, color: 'var(--text-primary)' }}>📝 Session Note</label>
+                            <textarea id="session-note" placeholder="Add a quick note about today's session (e.g. focus, energy, aches)" value={note} onChange={(e) => setNote(e.target.value)} style={{ width: '100%', minHeight: '68px', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-color)', fontSize: '14px', resize: 'vertical' }} />
+                        </div>
                         <div style={{ backgroundColor: 'transparent', padding: '6px 0', borderRadius: '8px', marginBottom: '14px', maxHeight: '350px', overflowY: 'auto' }}>
                             {trackingData[exercise.name]?.sets?.map((setData, setIdx) => (
                                 <div key={setIdx} style={{ marginBottom: '14px', padding: '12px', backgroundColor: 'var(--bg-primary)', borderRadius: '12px', border: '1px solid var(--border-color)' }}>

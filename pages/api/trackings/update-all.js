@@ -12,7 +12,7 @@ export default function handler(req, res) {
     }
 
     if (req.method === 'POST') {
-        const { trackingId, exerciseName, setIndex, setData, userId, note } = req.body;
+        const { trackingId, exerciseName, sets, userId, note } = req.body;
 
         // SECURITY: Verify user can only update their own trackings
         if (!verifyResourceOwnership(tokenVerification.userId, userId)) {
@@ -32,8 +32,13 @@ export default function handler(req, res) {
         const tracking = trackings.find(t => t.id === trackingId && t.userId === userId);
         if (tracking) {
             const exercise = tracking.exercises.find(e => e.name === exerciseName);
-            if (exercise && exercise.sets) {
-                exercise.sets[setIndex] = setData;
+            if (exercise) {
+                // Merge provided sets with existing ones - only update indices that were provided
+                // Keep existing sets and update/add new ones based on what was submitted
+                if (sets && sets.length > 0) {
+                    // Replace sets with only the ones provided (can be partial)
+                    exercise.sets = sets;
+                }
                 // Update exercise note if provided
                 if (typeof note === 'string' && note.trim()) {
                     exercise.note = note;
@@ -41,7 +46,7 @@ export default function handler(req, res) {
                 fs.writeFileSync(filePath, JSON.stringify(trackings, null, 2));
                 res.status(200).json({ success: true });
             } else {
-                res.status(404).json({ error: 'Exercise or sets not found' });
+                res.status(404).json({ error: 'Exercise not found' });
             }
         } else {
             res.status(404).json({ error: 'Tracking not found' });

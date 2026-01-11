@@ -42,7 +42,8 @@
     --glass-blur: 12px;
 }
 
-@media (prefers-color-scheme: dark) {
+/* Disabled: Prevent dark mode from system preference */
+/* @media (prefers-color-scheme: dark) {
     :root {
         --bg-primary: #05060b;
         --bg-secondary: #071124;
@@ -56,20 +57,22 @@
         --glass-bg: rgba(255, 255, 255, 0.03);
         --glass-border: rgba(255, 255, 255, 0.06);
     }
-}
+} */
 
 /* Manual dark mode using `.dark` class on <html> or <body> */
 html.dark,
 body.dark {
-    --bg-primary: #1c1c1e;
-    --bg-secondary: #2c2c2e;
-    --bg-tertiary: #3a3a3c;
-    --text-primary: #ffffff;
-    --text-secondary: #a1a1a6;
-    --text-tertiary: #8e8e93;
-    --border-color: #424245;
-    --card-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
-    --card-shadow-hover: 0 12px 24px rgba(0, 0, 0, 0.5);
+    --bg-primary: #121212;
+    --bg-secondary: #1e1e1e;
+    --bg-tertiary: #2a2a2a;
+    --text-primary: #e8e8e8;
+    --text-secondary: #b0b0b0;
+    --text-tertiary: #888888;
+    --border-color: #333333;
+    --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    --card-shadow-hover: 0 8px 20px rgba(0, 0, 0, 0.3);
+    --glass-bg: rgba(30, 30, 30, 0.8);
+    --glass-border: rgba(255, 255, 255, 0.1);
 }
 
 html {
@@ -247,6 +250,15 @@ li {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+@media (prefers-color-scheme: dark) {
+
+    body.dark .workout-card,
+    html.dark .workout-card {
+        background: #171717;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
 }
 
 .workout-card:active {

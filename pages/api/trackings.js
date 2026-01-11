@@ -30,7 +30,7 @@ export default function handler(req, res) {
             res.status(200).json([]);
         }
     } else if (req.method === 'POST') {
-        const { workoutId, date, exercises, isSingleSet, userId } = req.body;
+        const { workoutId, date, exercises, isSingleSet, userId, note, exerciseName } = req.body;
 
         // SECURITY: Verify user can only save trackings for themselves
         if (!verifyResourceOwnership(tokenUserId, userId)) {
@@ -61,18 +61,35 @@ export default function handler(req, res) {
                     if (existingEx) {
                         if (!existingEx.sets) existingEx.sets = [];
                         existingEx.sets.push(newEx.sets[0]);
+                        // Merge note if provided
+                        if (typeof note === 'string' && note.trim()) {
+                            existingEx.note = note;
+                        }
                     } else {
+                        // Add note to the exercise being added
+                        if (typeof note === 'string' && note.trim()) {
+                            newEx.note = note;
+                        }
                         todayTracking.exercises.push(newEx);
                     }
                 });
             } else {
                 // Create new today's tracking
-                const newTracking = { id: Date.now().toString(), userId, workoutId, date: new Date().toISOString(), exercises };
+                // Add note to exercises if provided
+                const exercisesWithNote = exercises.map(ex => ({
+                    ...ex,
+                    ...(typeof note === 'string' && note.trim() ? { note } : {})
+                }));
+                const newTracking = { id: Date.now().toString(), userId, workoutId, date: new Date().toISOString(), exercises: exercisesWithNote };
                 trackings.push(newTracking);
             }
         } else {
-            // Save entire session
-            const newTracking = { id: Date.now().toString(), userId, workoutId, date, exercises };
+            // Save entire session - add note to exercises
+            const exercisesWithNote = exercises.map(ex => ({
+                ...ex,
+                ...(typeof note === 'string' && note.trim() ? { note } : {})
+            }));
+            const newTracking = { id: Date.now().toString(), userId, workoutId, date, exercises: exercisesWithNote };
             trackings.push(newTracking);
         }
 

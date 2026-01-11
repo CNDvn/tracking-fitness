@@ -8,12 +8,12 @@ export default function Home() {
     const [loading, setLoading] = useState(true);
     const { user, setUser } = useContext(UserContext);
     const router = useRouter();
-    const [theme, setTheme] = useState('system');
+    const [theme, setTheme] = useState('light');
 
     useEffect(() => {
-        // Load theme preference and apply
+        // Load theme preference and apply - default to light mode
         const saved = localStorage.getItem('theme');
-        const prefer = saved || 'system';
+        const prefer = saved || 'light';
         setTheme(prefer);
         applyTheme(prefer);
     }, []);
@@ -22,12 +22,9 @@ export default function Home() {
         const root = document.documentElement;
         if (t === 'dark') {
             root.classList.add('dark');
-        } else if (t === 'light') {
-            root.classList.remove('dark');
         } else {
-            // system
+            // Always use light mode by default
             root.classList.remove('dark');
-            // let OS handle via prefers-color-scheme media query
         }
     };
 

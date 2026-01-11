@@ -10,6 +10,20 @@ export default function App({ Component, pageProps }) {
     const router = useRouter()
 
     useEffect(() => {
+        // Force light mode as default on initial load
+        const savedTheme = localStorage.getItem('theme');
+        const themeToApply = savedTheme || 'light';
+        localStorage.setItem('theme', themeToApply);
+
+        const root = document.documentElement;
+        if (themeToApply === 'light') {
+            root.classList.remove('dark');
+        } else if (themeToApply === 'dark') {
+            root.classList.add('dark');
+        }
+    }, []);
+
+    useEffect(() => {
         // Wait until router is ready to avoid race conditions
         if (!router.isReady) return
 

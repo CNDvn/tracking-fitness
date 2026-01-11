@@ -24,36 +24,21 @@ export default function WorkoutDetail() {
     return (
         <div className="container">
             {/* Header */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
                 <button
                     onClick={() => router.back()}
-                    style={{
-                        backgroundColor: '#f1f5f9',
-                        color: '#475569',
-                        border: '2px solid #e2e8f0',
-                        padding: '8px 12px',
-                        borderRadius: '8px',
-                        cursor: 'pointer',
-                        fontSize: '14px',
-                        fontWeight: '600',
-                        transition: 'all 0.3s ease',
-                        minWidth: '44px',
-                        minHeight: '44px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                    }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = '#e2e8f0';
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = '#f1f5f9';
-                    }}
+                    aria-label="Go back"
+                    className="back-btn"
                 >
-                    ←
+                    <span className="back-icon" aria-hidden>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                    </span>
+                    <span className="back-label">Back</span>
                 </button>
                 <div>
-                    <h1 style={{ margin: 0 }}>{workout.name}</h1>
+                    <h1 style={{ margin: 0, fontSize: '20px', fontWeight: 800 }}>{workout.name}</h1>
                 </div>
             </div>
 

@@ -60,133 +60,51 @@ export default function Login() {
 
     return (
         <div className="container" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: '100vh', padding: '24px 16px' }}>
-            {/* Header */}
-            <div style={{ marginBottom: '48px', textAlign: 'center' }}>
-                <div style={{ fontSize: '64px', marginBottom: '16px' }}>💪</div>
-                <h1 style={{ margin: '0 0 8px 0', fontSize: '32px', fontWeight: 800 }}>Fitness Tracker</h1>
-                <p style={{ color: 'var(--text-secondary)', margin: 0, fontSize: '16px', fontWeight: 500 }}>
-                    {isLogin ? 'Welcome back' : 'Get started today'}
-                </p>
-            </div>
-
-            {/* Form */}
-            <form onSubmit={handleSubmit} style={{ marginBottom: '32px' }}>
-                <div style={{ marginBottom: '16px' }}>
-                    <label style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-primary)', display: 'block', marginBottom: '8px' }}>
-                        Username
-                    </label>
-                    <input
-                        type="text"
-                        placeholder="Enter your username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        required
-                        disabled={loading}
-                    />
-                </div>
-
-                {!isLogin && (
-                    <div style={{ marginBottom: '16px' }}>
-                        <label style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-primary)', display: 'block', marginBottom: '8px' }}>
-                            Full Name
-                        </label>
-                        <input
-                            type="text"
-                            placeholder="Your full name"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            required
-                            disabled={loading}
-                        />
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+                <div className="glass-card" style={{ width: '100%', maxWidth: '440px', textAlign: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '8px' }}>
+                        <div className="emoji-avatar" style={{ background: 'linear-gradient(90deg,var(--accent-electric-blue),var(--accent-neon-purple))', color: 'white' }}>💪</div>
+                        <div>
+                            <h1 style={{ margin: 0, fontSize: '22px', fontWeight: 900 }}>Fitness</h1>
+                            <div className="muted" style={{ fontWeight: 600, fontSize: '13px' }}>{isLogin ? 'Welcome back' : 'Create your account'}</div>
+                        </div>
                     </div>
-                )}
+                    <form onSubmit={handleSubmit} style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        <div>
+                            <label className="caps">Username</label>
+                            <input type="text" placeholder="username" value={username} onChange={(e) => setUsername(e.target.value)} required disabled={loading} />
+                        </div>
 
-                <div style={{ marginBottom: '24px' }}>
-                    <label style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-primary)', display: 'block', marginBottom: '8px' }}>
-                        Password
-                    </label>
-                    <input
-                        type="password"
-                        placeholder="Enter your password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                        disabled={loading}
-                    />
-                </div>
+                        {!isLogin && (
+                            <div>
+                                <label className="caps">Full name</label>
+                                <input type="text" placeholder="Your full name" value={name} onChange={(e) => setName(e.target.value)} required disabled={loading} />
+                            </div>
+                        )}
 
-                {message && (
-                    <div className={message.includes('✓') ? 'success-message' : 'error-message'} style={{ marginBottom: '16px', textAlign: 'center' }}>
-                        {message}
+                        <div>
+                            <label className="caps">Password</label>
+                            <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required disabled={loading} />
+                        </div>
+
+                        {message && (
+                            <div className={message.includes('✓') ? 'success-message' : 'error-message'} style={{ textAlign: 'center' }}>{message}</div>
+                        )}
+
+                        <button type="submit" disabled={loading} className="btn-cta">{loading ? '⏳ Loading...' : (isLogin ? '🔓 Login' : '✍️ Register')}</button>
+                    </form>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '14px', justifyContent: 'center' }}>
+                        <div style={{ height: '1px', background: 'var(--border-color)', flex: 1 }} />
+                        <div className="muted" style={{ fontSize: '12px', fontWeight: 700 }}>OR</div>
+                        <div style={{ height: '1px', background: 'var(--border-color)', flex: 1 }} />
                     </div>
-                )}
 
-                <button
-                    type="submit"
-                    disabled={loading}
-                    style={{
-                        width: '100%',
-                        padding: '16px',
-                        fontSize: '16px',
-                        fontWeight: 700,
-                        background: loading ? 'var(--text-tertiary)' : 'var(--primary-color)',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '12px',
-                        cursor: loading ? 'not-allowed' : 'pointer',
-                        transition: 'all 0.3s ease',
-                        boxShadow: loading ? 'none' : '0 6px 16px rgba(0, 122, 255, 0.3)',
-                        opacity: loading ? 0.7 : 1
-                    }}
-                >
-                    {loading ? '⏳ Loading...' : (isLogin ? '🔓 Login' : '✍️ Register')}
-                </button>
-            </form>
-
-            {/* Divider */}
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '32px', gap: '12px' }}>
-                <div style={{ flex: 1, height: '1px', background: 'var(--border-color)' }}></div>
-                <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-secondary)', fontWeight: 500 }}>OR</p>
-                <div style={{ flex: 1, height: '1px', background: 'var(--border-color)' }}></div>
-            </div>
-
-            {/* Toggle Form */}
-            <div style={{ textAlign: 'center' }}>
-                <p style={{ margin: '0 0 16px 0', color: 'var(--text-secondary)', fontSize: '14px' }}>
-                    {isLogin ? "Don't have an account?" : 'Already have an account?'}
-                </p>
-                <button
-                    type="button"
-                    onClick={() => {
-                        setIsLogin(!isLogin);
-                        setMessage('');
-                        setUsername('');
-                        setPassword('');
-                        setName('');
-                    }}
-                    style={{
-                        backgroundColor: 'var(--bg-secondary)',
-                        color: 'var(--primary-color)',
-                        border: 'none',
-                        padding: '12px 24px',
-                        borderRadius: '10px',
-                        cursor: 'pointer',
-                        fontWeight: 700,
-                        fontSize: '14px',
-                        transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                        boxShadow: 'var(--card-shadow)'
-                    }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.transform = 'scale(0.98)';
-                        e.currentTarget.style.boxShadow = 'var(--card-shadow-hover)';
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.transform = 'scale(1)';
-                        e.currentTarget.style.boxShadow = 'var(--card-shadow)';
-                    }}
-                >
-                    {isLogin ? 'Create Account' : 'Back to Login'}
-                </button>
+                    <div style={{ marginTop: '12px', textAlign: 'center' }}>
+                        <p className="muted" style={{ margin: '0 0 8px 0' }}>{isLogin ? "Don't have an account?" : 'Already have an account?'}</p>
+                        <button type="button" onClick={() => { setIsLogin(!isLogin); setMessage(''); setUsername(''); setPassword(''); setName(''); }} style={{ background: 'transparent', border: '1px solid var(--border-color)', padding: '10px 18px', borderRadius: '12px', fontWeight: 800 }}>{isLogin ? 'Create Account' : 'Back to Login'}</button>
+                    </div>
+                </div>
             </div>
         </div>
     );

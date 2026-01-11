@@ -192,35 +192,23 @@ export default function ExerciseDetail() {
     return (
         <div className="container">
             {/* Header */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
                 <button
                     onClick={() => router.back()}
-                    style={{
-                        backgroundColor: '#f1f5f9',
-                        color: '#475569',
-                        border: '2px solid #e2e8f0',
-                        padding: '8px 12px',
-                        borderRadius: '8px',
-                        cursor: 'pointer',
-                        fontSize: '14px',
-                        fontWeight: '600',
-                        transition: 'all 0.3s ease',
-                        minWidth: '44px',
-                        minHeight: '44px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                    }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = '#e2e8f0';
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = '#f1f5f9';
-                    }}
+                    aria-label="Go back"
+                    className="back-btn"
                 >
-                    ←
+                    <span className="back-icon" aria-hidden>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                    </span>
+                    <span className="back-label">Back</span>
                 </button>
-                <h1 style={{ margin: 0, fontSize: '28px' }}>{exercise.name}</h1>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <h1 style={{ margin: 0, fontSize: '20px', fontWeight: 900 }}>{exercise.name}</h1>
+                    <div className="muted" style={{ marginTop: '6px', fontSize: '13px' }}>Track sets, save progress, and edit sessions</div>
+                </div>
             </div>
 
             {/* Message Alert */}
@@ -438,119 +426,27 @@ export default function ExerciseDetail() {
             )}
 
             {/* Track Today */}
-            <div style={{
-                padding: '16px',
-                backgroundColor: '#f3f4f6',
-                border: '2px solid #d1d5db',
-                borderRadius: '12px',
-                marginBottom: '20px'
-            }}>
-                <h3 style={{ marginTop: 0, fontSize: '16px', color: '#1f2937' }}>🏋️ Track Today</h3>
+            <div className="glass-card" style={{ marginBottom: '20px' }}>
+                <h3 style={{ marginTop: 0, fontSize: '16px' }}>🏋️ Track Today</h3>
 
                 {!trackingData[exercise.name] ? (
-                    <button
-                        onClick={initializeTracking}
-                        style={{
-                            width: '100%',
-                            backgroundColor: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-                            background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-                            color: 'white',
-                            border: 'none',
-                            padding: '14px',
-                            borderRadius: '8px',
-                            cursor: 'pointer',
-                            fontWeight: 700,
-                            fontSize: '16px',
-                            transition: 'all 0.3s ease',
-                            boxShadow: '0 4px 12px rgba(59, 130, 246, 0.4)'
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.transform = 'translateY(-3px)';
-                            e.currentTarget.style.boxShadow = '0 8px 24px rgba(59, 130, 246, 0.5)';
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.transform = 'translateY(0)';
-                            e.currentTarget.style.boxShadow = '0 4px 12px rgba(59, 130, 246, 0.4)';
-                        }}
-                    >
-                        ▶ Start Tracking
-                    </button>
+                    <button onClick={initializeTracking} className="btn-cta" style={{ width: '100%' }}>▶ Start Tracking</button>
                 ) : (
                     <>
-                        <div style={{ backgroundColor: '#ffffff', padding: '12px', borderRadius: '8px', marginBottom: '14px', maxHeight: '350px', overflowY: 'auto' }}>
+                        <div style={{ backgroundColor: 'transparent', padding: '6px 0', borderRadius: '8px', marginBottom: '14px', maxHeight: '350px', overflowY: 'auto' }}>
                             {trackingData[exercise.name]?.sets?.map((setData, setIdx) => (
-                                <div key={setIdx} style={{ marginBottom: '14px', padding: '12px', backgroundColor: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                                    <p style={{ fontSize: '14px', fontWeight: 700, color: '#334155', margin: '0 0 10px 0' }}>Set {setIdx + 1}</p>
+                                <div key={setIdx} style={{ marginBottom: '14px', padding: '12px', backgroundColor: 'var(--bg-primary)', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+                                    <p style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 10px 0' }}>Set {setIdx + 1}</p>
                                     <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
-                                        <input
-                                            type="number"
-                                            placeholder="Weight (kg)"
-                                            value={setData.weight}
-                                            onChange={(e) => handleSetChange(setIdx, 'weight', e.target.value)}
-                                            style={{ flex: 1, padding: '10px 12px', borderRadius: '8px', border: '2px solid #e2e8f0', fontSize: '14px' }}
-                                        />
-                                        <input
-                                            type="number"
-                                            placeholder="Reps"
-                                            value={setData.reps}
-                                            onChange={(e) => handleSetChange(setIdx, 'reps', e.target.value)}
-                                            style={{ flex: 1, padding: '10px 12px', borderRadius: '8px', border: '2px solid #e2e8f0', fontSize: '14px' }}
-                                        />
+                                        <input type="number" placeholder="Weight (kg)" value={setData.weight} onChange={(e) => handleSetChange(setIdx, 'weight', e.target.value)} style={{ flex: 1, padding: '10px 12px', borderRadius: '10px', border: '1px solid var(--border-color)', fontSize: '14px' }} />
+                                        <input type="number" placeholder="Reps" value={setData.reps} onChange={(e) => handleSetChange(setIdx, 'reps', e.target.value)} style={{ flex: 1, padding: '10px 12px', borderRadius: '10px', border: '1px solid var(--border-color)', fontSize: '14px' }} />
                                     </div>
-                                    <button
-                                        onClick={() => saveSetTracking(setIdx, setData)}
-                                        style={{
-                                            width: '100%',
-                                            backgroundColor: '#10b981',
-                                            color: 'white',
-                                            border: 'none',
-                                            padding: '8px',
-                                            borderRadius: '6px',
-                                            cursor: 'pointer',
-                                            fontSize: '13px',
-                                            fontWeight: 700,
-                                            transition: 'all 0.3s ease'
-                                        }}
-                                        onMouseEnter={(e) => {
-                                            e.currentTarget.style.transform = 'translateY(-1px)';
-                                            e.currentTarget.style.boxShadow = '0 4px 12px rgba(16, 185, 129, 0.3)';
-                                        }}
-                                        onMouseLeave={(e) => {
-                                            e.currentTarget.style.transform = 'translateY(0)';
-                                            e.currentTarget.style.boxShadow = 'none';
-                                        }}
-                                    >
-                                        ✓ Save Set {setIdx + 1}
-                                    </button>
+                                    <button onClick={() => saveSetTracking(setIdx, setData)} className="btn-cta" style={{ width: '100%', background: 'linear-gradient(90deg, var(--accent-neon-purple), var(--accent-electric-blue))', padding: '10px', borderRadius: '10px' }}>✓ Save Set {setIdx + 1}</button>
                                 </div>
                             ))}
                         </div>
 
-                        <button
-                            onClick={saveHeavyDay}
-                            style={{
-                                width: '100%',
-                                marginTop: '12px',
-                                background: isHeavyDay ? 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)' : 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-                                color: 'white',
-                                border: 'none',
-                                padding: '12px',
-                                borderRadius: '8px',
-                                cursor: 'pointer',
-                                fontWeight: 700,
-                                fontSize: '14px',
-                                transition: 'all 0.3s ease',
-                                boxShadow: isHeavyDay ? '0 4px 12px rgba(220, 38, 38, 0.4)' : '0 4px 12px rgba(245, 158, 11, 0.4)'
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.transform = 'translateY(-2px)';
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.transform = 'translateY(0)';
-                            }}
-                        >
-                            {isHeavyDay ? '💪 Heavy Day!' : '💪 Mark as Heavy Day'}
-                        </button>
+                        <button onClick={saveHeavyDay} className="btn-cta" style={{ width: '100%', marginTop: '12px', background: isHeavyDay ? 'linear-gradient(90deg,#ef4444,#dc2626)' : 'linear-gradient(90deg,var(--accent-soft-orange),var(--accent-neon-purple))' }}>{isHeavyDay ? '💪 Heavy Day!' : '💪 Mark as Heavy Day'}</button>
                     </>
                 )}
             </div>

@@ -63,7 +63,7 @@ export default function Login() {
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
                 <div className="glass-card" style={{ width: '100%', maxWidth: '440px', textAlign: 'center' }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '8px' }}>
-                        <div className="emoji-avatar" style={{ background: 'linear-gradient(90deg,var(--accent-electric-blue),var(--accent-neon-purple))', color: 'white' }}>💪</div>
+                        <div className="emoji-avatar" style={{ background: 'linear-gradient(90deg,var(--primary-color),var(--primary-dark))', color: 'white' }}>💪</div>
                         <div>
                             <h1 style={{ margin: 0, fontSize: '22px', fontWeight: 900 }}>Fitness</h1>
                             <div className="muted" style={{ fontWeight: 600, fontSize: '13px' }}>{isLogin ? 'Welcome back' : 'Create your account'}</div>
@@ -102,7 +102,14 @@ export default function Login() {
 
                     <div style={{ marginTop: '12px', textAlign: 'center' }}>
                         <p className="muted" style={{ margin: '0 0 8px 0' }}>{isLogin ? "Don't have an account?" : 'Already have an account?'}</p>
-                        <button type="button" onClick={() => { setIsLogin(!isLogin); setMessage(''); setUsername(''); setPassword(''); setName(''); }} style={{ background: 'transparent', border: '1px solid var(--border-color)', padding: '10px 18px', borderRadius: '12px', fontWeight: 800 }}>{isLogin ? 'Create Account' : 'Back to Login'}</button>
+                        <button
+                            type="button"
+                            onClick={() => { setIsLogin(!isLogin); setMessage(''); setUsername(''); setPassword(''); setName(''); }}
+                            className="btn-outline"
+                            style={{ padding: '10px 18px', borderRadius: '10px', fontWeight: 600 }}
+                        >
+                            {isLogin ? 'Create Account' : 'Back to Login'}
+                        </button>
                     </div>
                 </div>
             </div>

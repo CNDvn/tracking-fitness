@@ -9,6 +9,9 @@ export default function Home() {
     const { user, setUser } = useContext(UserContext);
     const router = useRouter();
     const [theme, setTheme] = useState('light');
+    const [profile, setProfile] = useState({ isPublic: false, publicProfileId: null });
+    const [profileLoading, setProfileLoading] = useState(true);
+    const [copySuccess, setCopySuccess] = useState('');
 
     useEffect(() => {
         // Load theme preference and apply - default to light mode
@@ -23,7 +26,6 @@ export default function Home() {
         if (t === 'dark') {
             root.classList.add('dark');
         } else {
-            // Always use light mode by default
             root.classList.remove('dark');
         }
     };
@@ -41,21 +43,20 @@ export default function Home() {
             if (!token) {
                 console.warn('No token found in localStorage');
                 setLoading(false);
+                setProfileLoading(false);
                 return;
             }
 
+            // Fetch workouts
             fetch(`/api/workouts`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                headers: { 'Authorization': `Bearer ${token}` }
             })
                 .then(res => res.json())
                 .then(data => {
-                    // Handle both array responses and error objects
                     if (Array.isArray(data)) {
                         setWorkouts(data);
                     } else {
-                        console.error('API returned non-array response:', data);
+                        console.error('API returned non-array response for workouts:', data);
                         setWorkouts([]);
                     }
                     setLoading(false);
@@ -65,9 +66,59 @@ export default function Home() {
                     setWorkouts([]);
                     setLoading(false);
                 });
+
+            // Fetch profile status
+            fetch(`/api/user/profile`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.publicProfileId) {
+                        setProfile(data);
+                    }
+                    setProfileLoading(false);
+                })
+                .catch(error => {
+                    console.error('Error fetching profile:', error);
+                    setProfileLoading(false);
+                });
         }
     }, [user, router.isReady]);
 
+    const togglePublicProfile = async () => {
+        const token = localStorage.getItem('token');
+        const newIsPublic = !profile.isPublic;
+        try {
+            const res = await fetch('/api/user/profile', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ isPublic: newIsPublic }),
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setProfile(prev => ({ ...prev, isPublic: data.isPublic }));
+            } else {
+                throw new Error(data.message || 'Failed to update profile');
+            }
+        } catch (error) {
+            console.error('Error toggling public profile:', error);
+        }
+    };
+
+    const copyToClipboard = () => {
+        const url = `${window.location.origin}/public/${profile.publicProfileId}`;
+        navigator.clipboard.writeText(url).then(() => {
+            setCopySuccess('Copied!');
+            setTimeout(() => setCopySuccess(''), 2000);
+        }, (err) => {
+            setCopySuccess('Failed');
+            console.error('Failed to copy: ', err);
+        });
+    };
+    
     const handleLogout = () => {
         localStorage.removeItem('user');
         localStorage.removeItem('token');
@@ -106,6 +157,40 @@ export default function Home() {
                         </a>
                     </Link>
                 </div>
+            </div>
+
+            {/* Public Profile Section */}
+            <div style={{ marginBottom: '28px' }}>
+                <h2 style={{ fontSize: '16px', fontWeight: 800, color: 'var(--text-primary)', margin: '0 0 12px 0' }}>Public Profile</h2>
+                {profileLoading ? (
+                    <div className="loading"><p>Loading profile settings...</p></div>
+                ) : (
+                    <div className="neumo" style={{ padding: '14px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <p style={{ margin: 0, fontWeight: 500 }}>Share your progress</p>
+                            <label className="switch">
+                                <input type="checkbox" checked={profile.isPublic} onChange={togglePublicProfile} />
+                                <span className="slider round"></span>
+                            </label>
+                        </div>
+                        {profile.isPublic && (
+                            <div style={{ marginTop: '14px', borderTop: '1px solid var(--border-color)', paddingTop: '14px' }}>
+                                <p className="muted" style={{ fontSize: '13px', margin: '0 0 8px 0' }}>Your public profile is active. Anyone with the link can see your progress.</p>
+                                <div style={{ display: 'flex', gap: '8px', alignItems: 'stretch' }}>
+                                    <input 
+                                        type="text" 
+                                        readOnly 
+                                        value={`${typeof window !== 'undefined' ? window.location.origin : ''}/public/${profile.publicProfileId}`}
+                                        style={{ flexGrow: 1, padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--secondary-bg)', color: 'var(--text-secondary)'}} 
+                                    />
+                                    <button onClick={copyToClipboard} className="btn" style={{ padding: '8px 16px', whiteSpace: 'nowrap' }}>
+                                        {copySuccess || 'Copy'}
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
 
             {/* Section Header */}

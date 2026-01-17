@@ -6,7 +6,8 @@ const filePath = path.join(process.cwd(), 'data', 'workouts.json');
 
 export default function handler(req, res) {
     // Verify token for all requests
-    const tokenVerification = verifyToken(req);
+    const token = req.headers.authorization?.split(' ')[1];
+    const tokenVerification = verifyToken(token);
     if (!tokenVerification.valid) {
         return res.status(401).json({ error: tokenVerification.error });
     }

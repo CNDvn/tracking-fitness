@@ -38,12 +38,17 @@ export default function App({ Component, pageProps }) {
         setLoading(false)
     }, [router.isReady])
 
-    // Redirect to login if not authenticated (except for login page)
+    // Redirect to login if not authenticated (except for public pages)
     useEffect(() => {
-        if (!loading && !user && router.pathname !== '/login' && router.isReady) {
-            router.push('/login')
+        if (loading || !router.isReady) return;
+
+        const isPublicPage = router.pathname.startsWith('/public/');
+        const isAuthPage = router.pathname === '/login' || router.pathname === '/register';
+
+        if (!user && !isAuthPage && !isPublicPage) {
+            router.push('/login');
         }
-    }, [user, loading, router.pathname, router.isReady])
+    }, [user, loading, router.pathname, router.isReady]);
 
     if (loading) {
         return (

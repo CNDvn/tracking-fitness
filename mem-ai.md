@@ -53,6 +53,12 @@
 - Separate UI section shows most recent heavy session
 - Visual distinction for heavy vs normal days
 
+### 6. Public Progress Workout
+
+- Users can mark their profile as public.
+- Public profiles have a unique `publicProfileId`.
+- Others can view a public user's workout trackings via a public link.
+
 ## Data Structure
 
 ### User (users.json)
@@ -132,6 +138,12 @@
 
 - `POST /api/auth/login` - Login user
 - `POST /api/auth/register` - Register new user
+
+### Public Profiles & Trackings
+
+- `GET /api/user/profile` - Get user profile (including `isPublic` status)
+- `PUT /api/user/profile` - Update user profile (including `isPublic` status)
+- `GET /api/public/trackings/:profileId` - Get public trackings for a user
 
 ## UI/UX Design System (Latest Refactor)
 

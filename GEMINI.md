@@ -1,0 +1,1 @@
+- always read @mem-ai.md file to load context

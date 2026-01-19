@@ -6,7 +6,8 @@ export default function Document() {
       <Head>
         {/* Prevent iOS from forcing dark mode */}
         <meta name="color-scheme" content="light" />
-        <meta name="theme-color" content="#ffffff" />
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#7c3aed" />
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
